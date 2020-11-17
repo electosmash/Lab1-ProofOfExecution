@@ -1,0 +1,259 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Lab1
+{
+
+    public partial class Form1 : Form
+    {
+        pattern1 p1 = new pattern1();
+        pattern2 p4 = new pattern2();
+        Bitmap star;
+        Bitmap line;
+        Bitmap bg;
+        private void formBitmapsFromData() 
+        {
+	    Bitmap star = new Bitmap(29,29);
+	    Bitmap line = new Bitmap(29,29);
+	    //1000+ lines of filler from importing the star and line patterns...
+            ...
+        }
+        public Form1()
+        {
+            InitializeComponent();
+            formBitmapsFromData();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2 != null) { pictureBox2.Dispose(); }
+            listBox1.Items.Clear();
+            p1.populateString();
+            p1.printStringFlip(listBox1);
+            drawData(1);
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2 != null) { pictureBox2.Dispose(); }
+            listBox1.Items.Clear();
+            p1.populateString();
+            p1.printStringBack(listBox1);
+            drawData(2);
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2 != null) { pictureBox2.Dispose(); }
+            listBox1.Items.Clear();
+            p1.populateString();
+            p1.printString(listBox1);
+            drawData(3);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (pictureBox2 != null) { pictureBox2.Dispose(); }
+            listBox1.Items.Clear();
+            p4.populateString(listBox1);
+            drawData(4);
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked == true) { this.Size = new Size(327, 747); }
+            else { this.Size = new Size(327, 397); }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+        private void drawData(int mode)
+        {
+
+            if (pictureBox1.BackgroundImage != null) { pictureBox1.BackgroundImage.Dispose(); }
+            if (bg != null) { bg.Dispose(); }
+            bg = new Bitmap(290, 290);
+            int xFid = bg.Width / 10;
+            int yFid = bg.Height / 10;
+            string inputS = "";
+
+            for (int a = 0; a < 10; a++)
+            {
+                inputS = listBox1.Items[a].ToString();
+                for (int b = 0; b < inputS.Length; b++)
+                {
+                    if (inputS[b].ToString() == "*") { drawStar(b * xFid, a * yFid); }
+                    if (inputS[b].ToString() == "-") { drawLine(b * xFid, a * yFid); }
+                }
+            }
+
+
+            pictureBox1.BackgroundImage = bg;
+
+        }
+        private void drawStar(int x, int y) 
+        {
+            for (int a = 0; a < star.Height; a++) 
+            {
+                for (int b = 0; b < star.Width; b++) 
+                {
+                    bg.SetPixel(a + x, b + y,star.GetPixel(a,b));
+                }
+            }
+        }
+        private void drawLine(int x, int y) 
+        {
+            for (int a = 0; a < line.Height; a++)
+            {
+                for (int b = 0; b < line.Width; b++)
+                {
+                    bg.SetPixel(a + x, b + y, line.GetPixel(a, b));
+                }
+            }
+        }
+        private void button5_Click(object sender, EventArgs e)
+        {
+            saveData(getData(new Bitmap(textBox1.Text)));
+            listBox1.Items.Add("NO ERRORS");
+        }
+        private Color[][] getData(Bitmap bp)
+        {
+            Color[][] ca = new Color[bp.Height][];
+            for (int a = 0; a < bp.Width; a++) { ca[a] = new Color[bp.Width]; }
+            for (int h = 0; h < bp.Height; h++)
+            {
+                for (int w = 0; w < bp.Width; w++)
+                {
+                    ca[h][w] = bp.GetPixel(h, w);
+                }
+            }
+
+            return ca;
+        }
+        private void saveData(Color[][] ca) 
+        {
+            System.IO.StreamWriter nw = new System.IO.StreamWriter(textBox2.Text);
+            for (int a = 0; a < ca.Length; a++) 
+            {
+                for (int b = 0; b < ca[0].Length; b++) 
+                {
+                    //star.SetPixel x y, color
+                    nw.WriteLine(textBox3.Text+".SetPixel("+a+","+b+",Color.FromArgb("+ ca[a][b].A + ","+ ca[a][b].R + ","+ ca[a][b].G +","+ ca[a][b].B+"));");
+                }
+            }
+            nw.Close();
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        //Convert to array - DONE
+        //save data - DONE
+        //import data
+        //draw data
+    }
+    class pattern1
+    {
+        string[][] pattern = new string[10][];
+        string printStringA;
+        public void populateString()
+        {
+            for (int i = 0; i < 10; i++) { pattern[i] = new string[10]; }
+            for (int i = 0; i < 10; i++)
+            {
+                for (int a = 0; a < i+1; a++)
+                {
+                    pattern[i][a] = "*";
+                }
+                for (int a = i+1; a < 10; a++)
+                {
+                    pattern[i][a] = "-";
+                }
+            }
+        }
+        public void printStringBack(ListBox listBoxA)
+        {
+            
+            for (int i = 0; i < 10; i++)
+            {
+                printStringA = "";
+                for (int b = 0; b < 10; b++)
+                {
+                    printStringA += (pattern[i][9-b]);
+                }
+                listBoxA.Items.Add(printStringA);
+            }
+        }
+        public void printStringFlip(ListBox listBoxA)
+        {
+
+            for (int i = 0; i < 10; i++)
+            {
+                printStringA = "";
+                for (int b = 0; b < 10; b++)
+                {
+                    printStringA += (pattern[9 - i][b]);
+                }
+                listBoxA.Items.Add(printStringA);
+            }
+        }
+        public void printString(ListBox listBoxA)
+        {
+
+            for (int i = 0; i < 10; i++)
+            {
+                printStringA = "";
+                for (int b = 0; b < 10; b++)
+                {
+                    printStringA += (pattern[9-i][9-b]);
+                }
+                listBoxA.Items.Add(printStringA);
+            }
+        }
+    }
+    class pattern2
+    {
+        string[][] pattern = new string[10][];
+        int d = 0;
+        int de = 0;
+        string newS = "";
+        public void populateString(ListBox listboxB)
+        {
+            for (int i = 0; i < 10; i++) { pattern[i] = new string[10]; }
+            for (int i = 0; i < 10; i++) 
+            {
+                newS = "";
+
+                if (i < (10 / 2) - 1) { d = ((10 / 2) - i)-1; }
+                if(i == (10 / 2) - 1) { d = 0; }
+                if(i > (10 / 2) - 1) { d = ((i+1) - (10 / 2))-1; }
+
+                for (int a = 0; a < d; a++) { newS += "-"; }
+
+                de = Math.Abs(d - 5);
+                //listboxB.Items.Add(de + "-vs-" + d);
+                if (d > 0) { newS += "*";de--; }
+
+                for (int a = 0; a < de; a++) 
+                {
+                    newS += "**";
+                }
+                listboxB.Items.Add(newS);
+
+            }
+        }
+    }
+}
